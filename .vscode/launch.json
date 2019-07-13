@@ -1,0 +1,33 @@
+{
+  // Use IntelliSense to find out which attributes exist for C# debugging
+  // Use hover for the description of the existing attributes
+  // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+  "version": "0.2.0",
+  "configurations": [{
+      "name": "Attach to Server in Docker",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickRemoteProcess}",
+      "sourceFileMap": {
+        "/app": "${workspaceRoot}/"
+      },
+      "pipeTransport": {
+        "pipeCwd": "${workspaceRoot}",
+        "pipeProgram": "docker",
+        "pipeArgs": [
+          "exec",
+          "-i",
+          "vsc-themes-store-api"
+        ],
+        "quoteArgs": false,
+        "debuggerPath": "/vsdbg/vsdbg"
+      }
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickProcess}"
+    }
+  ]
+}

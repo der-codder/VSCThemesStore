@@ -1,0 +1,55 @@
+version: '3.4'
+
+services:
+  vsc-themes-store-api:
+    container_name: vsc-themes-store-api
+    image: dercodder/vsc-themes-store-api
+    restart: always
+    build:
+      context: ./api
+      dockerfile: dev.dockerfile
+    ports:
+      - 5021:5021
+    volumes:
+      - './api:/app/api'
+      - 'serverlogs:/logs'
+    environment:
+      MongoDB__Host: mongo
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:4.0
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - 27017:27017
+
+    # disable output
+    logging:
+      driver: 'none'
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    depends_on:
+      - mongo
+
+    # disable output
+    logging:
+      driver: 'none'
+
+volumes:
+  mongodata:
+    external: true
+  serverlogs:
+    external: true
