@@ -3,23 +3,23 @@ using MongoDB.Driver;
 
 namespace VSCThemesStore.WebApi.Domain.Repositories
 {
-    public interface IGalleryContext
+    public interface IStoreContext
     {
-        IMongoCollection<ExtensionMetadata> GalleryMetadata { get; }
-        IMongoCollection<VSCodeTheme> VSCodeThemeStore { get; }
+        IMongoCollection<ExtensionMetadata> ExtensionsMetadata { get; }
+        IMongoCollection<VSCodeTheme> Themes { get; }
     }
 
-    public class GalleryContext : IGalleryContext
+    public class StoreContext : IStoreContext
     {
         private readonly IMongoDatabase _db;
 
-        public IMongoCollection<ExtensionMetadata> GalleryMetadata =>
-            _db.GetCollection<ExtensionMetadata>("GalleryMetadata");
+        public IMongoCollection<ExtensionMetadata> ExtensionsMetadata =>
+            _db.GetCollection<ExtensionMetadata>("ExtensionsMetadata");
 
-        public IMongoCollection<VSCodeTheme> VSCodeThemeStore =>
-            _db.GetCollection<VSCodeTheme>("VSCodeThemeStore");
+        public IMongoCollection<VSCodeTheme> Themes =>
+            _db.GetCollection<VSCodeTheme>("Themes");
 
-        public GalleryContext(MongoDBConfig config)
+        public StoreContext(MongoDBConfig config)
         {
             var client = new MongoClient(config.ConnectionString);
             _db = client.GetDatabase(config.Database);
@@ -55,7 +55,7 @@ namespace VSCThemesStore.WebApi.Domain.Repositories
                         .Text(m => m.Description)
                 )
             };
-            GalleryMetadata.Indexes.CreateMany(indexModel);
+            ExtensionsMetadata.Indexes.CreateMany(indexModel);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace VSCThemesStore.WebApi.Tests.Services
         {
             const string expectedId = "expectedId_test";
             const ExtensionType expectedExtensionType = ExtensionType.NoThemes;
-            _mock.Mock<IGalleryMetadataRepository>()
+            _mock.Mock<IExtensionsMetadataRepository>()
                 .Setup(x => x.GetExtensionMetadata(expectedId))
                 .ReturnsAsync(new ExtensionMetadata { Type = expectedExtensionType });
             var mockRefresher = _mock.Create<ThemeStoreRefresher>();
@@ -46,7 +46,7 @@ namespace VSCThemesStore.WebApi.Tests.Services
         public void GetStoredTheme_ReturnsProperTheme()
         {
             const string expectedId = "expectedId_test";
-            _mock.Mock<IVSCodeThemeStoreRepository>()
+            _mock.Mock<IThemeRepository>()
                 .Setup(x => x.GetTheme(expectedId))
                 .ReturnsAsync(new VSCodeTheme { Id = expectedId });
             var mockRefresher = _mock.Create<ThemeStoreRefresher>();
@@ -93,7 +93,7 @@ namespace VSCThemesStore.WebApi.Tests.Services
                 }
             };
 
-            _mock.Mock<IGalleryMetadataRepository>()
+            _mock.Mock<IExtensionsMetadataRepository>()
                 .Setup(x => x.ChangeExtensionType(expectedId, expectedType))
                 .ReturnsAsync(true);
             var mockRefresher = _mock.Create<ThemeStoreRefresher>();
@@ -114,7 +114,7 @@ namespace VSCThemesStore.WebApi.Tests.Services
                 Themes = new List<Theme>()
             };
 
-            _mock.Mock<IGalleryMetadataRepository>()
+            _mock.Mock<IExtensionsMetadataRepository>()
                 .Setup(x => x.ChangeExtensionType(expectedId, expectedType))
                 .ReturnsAsync(true);
             var mockRefresher = _mock.Create<ThemeStoreRefresher>();
@@ -129,14 +129,14 @@ namespace VSCThemesStore.WebApi.Tests.Services
         {
             const string expectedId = "expectedId_test";
             var newTheme = new VSCodeTheme { Id = expectedId };
-            _mock.Mock<IVSCodeThemeStoreRepository>()
+            _mock.Mock<IThemeRepository>()
                 .Setup(x => x.Create(newTheme))
                 .Returns(Task.CompletedTask);
             var mockRefresher = _mock.Create<ThemeStoreRefresher>();
 
             mockRefresher.CreateTheme(newTheme).Wait();
 
-            _mock.Mock<IVSCodeThemeStoreRepository>()
+            _mock.Mock<IThemeRepository>()
                 .Verify(x => x.Create(newTheme), Times.Once);
         }
 
@@ -145,14 +145,14 @@ namespace VSCThemesStore.WebApi.Tests.Services
         {
             const string expectedId = "expectedId_test";
             var theme = new VSCodeTheme { Id = expectedId };
-            _mock.Mock<IVSCodeThemeStoreRepository>()
+            _mock.Mock<IThemeRepository>()
                 .Setup(x => x.Update(theme))
                 .ReturnsAsync(true);
             var mockRefresher = _mock.Create<ThemeStoreRefresher>();
 
             mockRefresher.UpdateTheme(theme).Wait();
 
-            _mock.Mock<IVSCodeThemeStoreRepository>()
+            _mock.Mock<IThemeRepository>()
                 .Verify(x => x.Update(theme), Times.Once);
         }
 
@@ -171,20 +171,22 @@ namespace VSCThemesStore.WebApi.Tests.Services
                 Id = metadata.Id,
                 Version = metadata.Version
             };
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(""));
 
-            _mock.Mock<IVSAssetsClient>()
-                .Setup(x => x.GetVsixFileStream(metadata))
-                .ReturnsAsync(stream);
-            _mock.Mock<IVSExtensionHandler>()
-                .Setup(x => x.ProcessExtension(expectedTheme.Id, stream))
-                .ReturnsAsync(expectedTheme);
-            var mockRefresher = _mock.Create<ThemeStoreRefresher>();
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes("")))
+            {
+                _mock.Mock<IVSAssetsClient>()
+                    .Setup(x => x.GetVsixFileStream(metadata))
+                    .ReturnsAsync(stream);
+                _mock.Mock<IVSExtensionHandler>()
+                    .Setup(x => x.ProcessExtension(expectedTheme.Id, stream))
+                    .ReturnsAsync(expectedTheme);
+                var mockRefresher = _mock.Create<ThemeStoreRefresher>();
 
-            var actualTheme = mockRefresher.DownloadFreshTheme(metadata).Result;
+                var actualTheme = mockRefresher.DownloadFreshTheme(metadata).Result;
 
-            Assert.Equal(expectedTheme.Id, actualTheme.Id);
-            Assert.Equal(expectedTheme.Version, actualTheme.Version);
+                Assert.Equal(expectedTheme.Id, actualTheme.Id);
+                Assert.Equal(expectedTheme.Version, actualTheme.Version);
+            }
         }
     }
 }

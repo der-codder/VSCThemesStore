@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace VSCThemesStore.WebApi.Domain.Models
 {
-    public class GalleryQuery
+    public class StoreQuery
     {
         private const int DEFAULT_PAGE_NUMBER = 1;
         private const int DEFAULT_PAGE_SIZE = 50;
@@ -64,7 +64,7 @@ namespace VSCThemesStore.WebApi.Domain.Models
             }
         }
 
-        public GalleryQuery()
+        public StoreQuery()
         {
             _sortings = new Dictionary<string, SortDefinition<ExtensionMetadata>>
             {

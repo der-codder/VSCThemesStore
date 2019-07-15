@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using VSCThemesStore.WebApi.Domain.Repositories;
 using VSCThemesStore.WebApi.ScheduledJobs;
 using VSCThemesStore.WebApi.Services;
@@ -12,12 +7,9 @@ using VSCThemesStore.WebApi.Services.ThemeStoreRefreshing;
 using FluentScheduler;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Serilog;
 using VSCThemesStore.WebApi.Mapping;
 using Newtonsoft.Json;
@@ -60,9 +52,9 @@ namespace VSCThemesStore.WebApi
                         retryCount => TimeSpan.FromSeconds(Math.Pow(2, retryCount)),
                         (response, ts) => Log.Error($"Error while getting assets: {response.Exception.Message}. Retrying in {ts.Seconds} sec.")));
 
-            services.AddSingleton<IGalleryContext>(new GalleryContext(config.MongoDB));
-            services.AddSingleton<IGalleryMetadataRepository, GalleryMetadataRepository>();
-            services.AddSingleton<IVSCodeThemeStoreRepository, VSCodeThemeStoreRepository>();
+            services.AddSingleton<IStoreContext>(new StoreContext(config.MongoDB));
+            services.AddSingleton<IExtensionsMetadataRepository, ExtensionsMetadataRepository>();
+            services.AddSingleton<IThemeRepository, ThemeRepository>();
 
             services.AddTransient<IJsonFileLoader, JsonFileLoader>();
             services.AddTransient<IExtensionParsingService, ExtensionParsingService>();

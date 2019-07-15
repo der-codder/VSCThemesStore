@@ -16,23 +16,23 @@ namespace VSCThemesStore.WebApi.Controllers
     [ApiController]
     public class GalleryController : ControllerBase
     {
-        private readonly IGalleryMetadataRepository _metadataRepository;
-        private readonly IVSCodeThemeStoreRepository _themeStoreRepository;
+        private readonly IExtensionsMetadataRepository _metadataRepository;
+        private readonly IThemeRepository _themeRepository;
 
         public GalleryController(
-            IGalleryMetadataRepository metadataRepository,
-            IVSCodeThemeStoreRepository themeStoreRepository)
+            IExtensionsMetadataRepository metadataRepository,
+            IThemeRepository themeStoreRepository)
         {
             _metadataRepository = metadataRepository;
-            _themeStoreRepository = themeStoreRepository;
+            _themeRepository = themeStoreRepository;
         }
 
         // GET api/gallery?pageNumber=2&pageSize=10&sortBy=Downloads
         [HttpGet]
         public async Task<QueryResultResource<ExtensionMetadataResource>> Index(
-            [FromQuery] GalleryQueryResource queryResource)
+            [FromQuery] StoreQueryResource queryResource)
         {
-            var query = Mapper.Map<GalleryQueryResource, GalleryQuery>(queryResource);
+            var query = Mapper.Map<StoreQueryResource, StoreQuery>(queryResource);
 
             var queryResult = await _metadataRepository.GetItems(query);
 
@@ -55,7 +55,7 @@ namespace VSCThemesStore.WebApi.Controllers
                 return new NotFoundResult();
             }
 
-            var storedTheme = await _themeStoreRepository.GetTheme(id);
+            var storedTheme = await _themeRepository.GetTheme(id);
             if (storedTheme == null)
             {
                 Log.Error($"Stored theme for '{id}' extension is empty.");

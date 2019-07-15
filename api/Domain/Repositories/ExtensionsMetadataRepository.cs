@@ -4,9 +4,9 @@ using MongoDB.Driver;
 
 namespace VSCThemesStore.WebApi.Domain.Repositories
 {
-    public interface IGalleryMetadataRepository
+    public interface IExtensionsMetadataRepository
     {
-        Task<QueryResult<ExtensionMetadata>> GetItems(GalleryQuery query);
+        Task<QueryResult<ExtensionMetadata>> GetItems(StoreQuery query);
         Task<ExtensionMetadata> GetExtensionMetadata(string id);
         Task Create(ExtensionMetadata extensionMetadata);
         Task<bool> Update(ExtensionMetadata extensionMetadata);
@@ -15,18 +15,18 @@ namespace VSCThemesStore.WebApi.Domain.Repositories
         Task<bool> Delete(string id);
     }
 
-    public class GalleryMetadataRepository : IGalleryMetadataRepository
+    public class ExtensionsMetadataRepository : IExtensionsMetadataRepository
     {
-        private readonly IGalleryContext _context;
+        private readonly IStoreContext _context;
 
-        public GalleryMetadataRepository(IGalleryContext context) => _context = context;
+        public ExtensionsMetadataRepository(IStoreContext context) => _context = context;
 
-        public async Task<QueryResult<ExtensionMetadata>> GetItems(GalleryQuery query)
+        public async Task<QueryResult<ExtensionMetadata>> GetItems(StoreQuery query)
         {
             var filter = query.Filter;
 
-            var totalCount = await _context.GalleryMetadata.Find(filter).CountDocumentsAsync();
-            var items = await _context.GalleryMetadata
+            var totalCount = await _context.ExtensionsMetadata.Find(filter).CountDocumentsAsync();
+            var items = await _context.ExtensionsMetadata
                 .Find(filter)
                 .Sort(query.Sorting)
                 .Skip((query.PageNumber * query.PageSize) - query.PageSize)
@@ -44,13 +44,13 @@ namespace VSCThemesStore.WebApi.Domain.Repositories
         {
             var filter = Builders<ExtensionMetadata>.Filter.Eq(m => m.Id, id);
 
-            return _context.GalleryMetadata
+            return _context.ExtensionsMetadata
                 .Find(filter)
                 .FirstOrDefaultAsync();
         }
 
         public async Task Create(ExtensionMetadata extensionMetadata) =>
-            await _context.GalleryMetadata.InsertOneAsync(extensionMetadata);
+            await _context.ExtensionsMetadata.InsertOneAsync(extensionMetadata);
 
         public async Task<bool> Update(ExtensionMetadata extensionMetadata)
         {
@@ -76,7 +76,7 @@ namespace VSCThemesStore.WebApi.Domain.Repositories
                 .Set(i => i.Statistics.TrendingWeekly, extensionMetadata.Statistics.TrendingWeekly)
                 .Set(i => i.Statistics.TrendingMonthly, extensionMetadata.Statistics.TrendingMonthly);
 
-            var result = await _context.GalleryMetadata
+            var result = await _context.ExtensionsMetadata
                 .UpdateOneAsync(filter, updater);
 
             return result.IsAcknowledged && result.ModifiedCount == 1;
@@ -96,7 +96,7 @@ namespace VSCThemesStore.WebApi.Domain.Repositories
                 .Set(i => i.Statistics.TrendingWeekly, statistics.TrendingWeekly)
                 .Set(i => i.Statistics.TrendingMonthly, statistics.TrendingMonthly);
 
-            var result = await _context.GalleryMetadata
+            var result = await _context.ExtensionsMetadata
                 .UpdateOneAsync(filter, updater);
 
             return result.IsAcknowledged && result.ModifiedCount == 1;
@@ -109,7 +109,7 @@ namespace VSCThemesStore.WebApi.Domain.Repositories
             var updater = Builders<ExtensionMetadata>.Update
                 .Set(i => i.Type, itemType);
 
-            var result = await _context.GalleryMetadata
+            var result = await _context.ExtensionsMetadata
                 .UpdateOneAsync(filter, updater);
 
             return result.IsAcknowledged && result.ModifiedCount == 1;
@@ -119,7 +119,7 @@ namespace VSCThemesStore.WebApi.Domain.Repositories
         {
             FilterDefinition<ExtensionMetadata> filter = Builders<ExtensionMetadata>.Filter
                 .Eq(m => m.Id, id);
-            DeleteResult deleteResult = await _context.GalleryMetadata
+            DeleteResult deleteResult = await _context.ExtensionsMetadata
                 .DeleteOneAsync(filter);
 
             return deleteResult.IsAcknowledged

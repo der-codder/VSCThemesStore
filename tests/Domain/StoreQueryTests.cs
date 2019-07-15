@@ -4,7 +4,7 @@ using Xunit;
 
 namespace VSCThemesStore.WebApi.Tests.Domain
 {
-    public class GalleryQueryTests
+    public class StoreQueryTests
     {
         [Theory]
         [InlineData(null, null)]
@@ -16,7 +16,7 @@ namespace VSCThemesStore.WebApi.Tests.Domain
             int? pageNumber,
             int? pageSize)
         {
-            var query = new GalleryQuery
+            var query = new StoreQuery
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize
@@ -32,7 +32,7 @@ namespace VSCThemesStore.WebApi.Tests.Domain
         public void NormalizeQueryParams_DoesNotChangeValidPageNumber()
         {
             const int expectedPageNumber = 2;
-            var query = new GalleryQuery
+            var query = new StoreQuery
             {
                 PageNumber = expectedPageNumber
             };
@@ -46,7 +46,7 @@ namespace VSCThemesStore.WebApi.Tests.Domain
         public void NormalizeQueryParams_DoesNotChangeValidPageSize()
         {
             const int expectedPageSize = 20;
-            var query = new GalleryQuery
+            var query = new StoreQuery
             {
                 PageSize = expectedPageSize
             };

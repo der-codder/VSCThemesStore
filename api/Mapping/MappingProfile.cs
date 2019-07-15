@@ -24,7 +24,7 @@ namespace VSCThemesStore.WebApi.Mapping
             CreateMap(typeof(QueryResult<>), typeof(QueryResultResource<>));
 
             // API Resource to Domain
-            CreateMap<GalleryQueryResource, GalleryQuery>()
+            CreateMap<StoreQueryResource, StoreQuery>()
                 .AfterMap((_, q) => q.NormalizeQueryParams());
         }
     }

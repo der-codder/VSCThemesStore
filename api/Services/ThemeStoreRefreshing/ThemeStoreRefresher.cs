@@ -25,31 +25,31 @@ namespace VSCThemesStore.WebApi.Services.ThemeStoreRefreshing
     {
         private readonly IVSAssetsClient _assetsClient;
         private readonly IVSExtensionHandler _extensionHandler;
-        private readonly IVSCodeThemeStoreRepository _storeRepository;
-        private readonly IGalleryMetadataRepository _galleryMetadataRepo;
+        private readonly IThemeRepository _themeRepository;
+        private readonly IExtensionsMetadataRepository _metadataRepository;
 
         public ThemeStoreRefresher(
             IVSAssetsClient assetsClient,
             IVSExtensionHandler extensionHandler,
-            IVSCodeThemeStoreRepository storeRepository,
-            IGalleryMetadataRepository galleryMetadataRepo)
+            IThemeRepository themeRepository,
+            IExtensionsMetadataRepository metadataRepository)
         {
             _assetsClient = assetsClient;
             _extensionHandler = extensionHandler;
-            _storeRepository = storeRepository;
-            _galleryMetadataRepo = galleryMetadataRepo;
+            _themeRepository = themeRepository;
+            _metadataRepository = metadataRepository;
         }
 
         public async Task<ExtensionType> GetSavedExtensionType(string extensionId)
         {
-            var savedThemeMetadata = await _galleryMetadataRepo.GetExtensionMetadata(extensionId);
+            var savedThemeMetadata = await _metadataRepository.GetExtensionMetadata(extensionId);
 
             return savedThemeMetadata.Type;
         }
 
         public async Task<VSCodeTheme> GetStoredTheme(string extensionId)
         {
-            return await _storeRepository.GetTheme(extensionId);
+            return await _themeRepository.GetTheme(extensionId);
         }
 
         public async Task<VSCodeTheme> DownloadFreshTheme(ExtensionMetadata metadata)
@@ -69,7 +69,7 @@ namespace VSCThemesStore.WebApi.Services.ThemeStoreRefreshing
             {
                 Log.Information($"Extension '{freshTheme.Id}' does not contribute any theme. Changing its Type.");
                 const ExtensionType themeType = ExtensionType.NoThemes;
-                var result = await _galleryMetadataRepo.ChangeExtensionType(
+                var result = await _metadataRepository.ChangeExtensionType(
                     freshTheme.Id,
                     themeType
                 );
@@ -89,7 +89,7 @@ namespace VSCThemesStore.WebApi.Services.ThemeStoreRefreshing
             {
                 Log.Information($"Extension '{freshTheme.Id}' does not contains any TokenColor. Changing its Type.");
                 const ExtensionType themeType = ExtensionType.NeedAttention;
-                var result = await _galleryMetadataRepo.ChangeExtensionType(
+                var result = await _metadataRepository.ChangeExtensionType(
                     freshTheme.Id,
                     themeType
                 );
@@ -111,13 +111,13 @@ namespace VSCThemesStore.WebApi.Services.ThemeStoreRefreshing
 
         public async Task CreateTheme(VSCodeTheme newTheme)
         {
-            await _storeRepository.Create(newTheme);
+            await _themeRepository.Create(newTheme);
             Log.Information($"Created new theme in store: Id='{newTheme.Id}'.");
         }
 
         public async Task UpdateTheme(VSCodeTheme theme)
         {
-            var result = await _storeRepository.Update(theme);
+            var result = await _themeRepository.Update(theme);
 
             if (result)
             {

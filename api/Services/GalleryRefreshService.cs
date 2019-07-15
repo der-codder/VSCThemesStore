@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using VSCThemesStore.WebApi.Domain.Models;
 using VSCThemesStore.WebApi.Domain.Repositories;
 using VSCThemesStore.WebApi.Services.ThemeStoreRefreshing;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace VSCThemesStore.WebApi.Services
@@ -21,16 +16,16 @@ namespace VSCThemesStore.WebApi.Services
     public class GalleryRefreshService : IGalleryRefreshService
     {
         private readonly IVSMarketplaceClient _marketplaceClient;
-        private readonly IGalleryMetadataRepository _galleryMetadataRepository;
+        private readonly IExtensionsMetadataRepository _metadataRepository;
         private readonly IThemeStoreRefreshService _themeStoreRefreshService;
 
         public GalleryRefreshService(
             IVSMarketplaceClient marketplaceClient,
-            IGalleryMetadataRepository galleryMetadataRepository,
+            IExtensionsMetadataRepository metadataRepository,
             IThemeStoreRefreshService themeStoreRefreshService)
         {
             _marketplaceClient = marketplaceClient;
-            _galleryMetadataRepository = galleryMetadataRepository;
+            _metadataRepository = metadataRepository;
             _themeStoreRefreshService = themeStoreRefreshService;
         }
 
@@ -78,7 +73,7 @@ namespace VSCThemesStore.WebApi.Services
         {
             try
             {
-                var extensionMetadata = await _galleryMetadataRepository
+                var extensionMetadata = await _metadataRepository
                     .GetExtensionMetadata(freshMetadata.Id);
 
                 if (extensionMetadata == null)
@@ -103,12 +98,12 @@ namespace VSCThemesStore.WebApi.Services
         private async Task CreateExtensionMetadata(ExtensionMetadata extensionMetadata)
         {
             Log.Information($"Create extension metadata: '{extensionMetadata.Id}'.");
-            await _galleryMetadataRepository.Create(extensionMetadata);
+            await _metadataRepository.Create(extensionMetadata);
         }
 
         private async Task UpdateExtensionMetadata(ExtensionMetadata extensionInfo)
         {
-            var result = await _galleryMetadataRepository.Update(extensionInfo);
+            var result = await _metadataRepository.Update(extensionInfo);
 
             if (result)
             {
@@ -124,7 +119,7 @@ namespace VSCThemesStore.WebApi.Services
         {
             try
             {
-                var result = await _galleryMetadataRepository
+                var result = await _metadataRepository
                     .UpdateStatistics(extensionId, freshStatistics);
 
                 if (result)

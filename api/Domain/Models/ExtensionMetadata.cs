@@ -12,7 +12,6 @@ namespace VSCThemesStore.WebApi.Domain.Models
 {
     public class ExtensionMetadata
     {
-        // TODO: add ExtensionId to identify it?
         [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
         public string Id { get; set; }
 
