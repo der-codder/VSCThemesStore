@@ -16,13 +16,16 @@ namespace VSCThemesStore.WebApi.Controllers
     [ApiController]
     public class GalleryController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IExtensionsMetadataRepository _metadataRepository;
         private readonly IThemeRepository _themeRepository;
 
         public GalleryController(
+            IMapper mapper,
             IExtensionsMetadataRepository metadataRepository,
             IThemeRepository themeStoreRepository)
         {
+            _mapper = mapper;
             _metadataRepository = metadataRepository;
             _themeRepository = themeStoreRepository;
         }
@@ -32,11 +35,11 @@ namespace VSCThemesStore.WebApi.Controllers
         public async Task<QueryResultResource<ExtensionMetadataResource>> Index(
             [FromQuery] StoreQueryResource queryResource)
         {
-            var query = Mapper.Map<StoreQueryResource, StoreQuery>(queryResource);
+            var query = _mapper.Map<StoreQueryResource, StoreQuery>(queryResource);
 
             var queryResult = await _metadataRepository.GetItems(query);
 
-            return Mapper.Map<QueryResult<ExtensionMetadata>, QueryResultResource<ExtensionMetadataResource>>(queryResult);
+            return _mapper.Map<QueryResult<ExtensionMetadata>, QueryResultResource<ExtensionMetadataResource>>(queryResult);
         }
 
         // GET api/gallery/id
@@ -62,7 +65,7 @@ namespace VSCThemesStore.WebApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-            var extension = Mapper.Map<ExtensionMetadata, ExtensionResource>(metadata);
+            var extension = _mapper.Map<ExtensionMetadata, ExtensionResource>(metadata);
             extension.Themes = ConvertThemes(storedTheme.Themes);
 
             return new OkObjectResult(extension);
@@ -73,9 +76,9 @@ namespace VSCThemesStore.WebApi.Controllers
             return storedThemes
                 .Select(theme =>
                 {
-                    var themeResource = Mapper.Map<Theme, ThemeResource>(theme);
+                    var themeResource = _mapper.Map<Theme, ThemeResource>(theme);
                     themeResource.TokenColors = theme.TokenColors
-                        .Select(tc => Mapper.Map<TokenColor, TokenColorResource>(tc))
+                        .Select(tc => _mapper.Map<TokenColor, TokenColorResource>(tc))
                         .ToList();
                     themeResource.Colors = new Dictionary<string, string>(
                         theme.Colors

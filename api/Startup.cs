@@ -65,8 +65,6 @@ namespace VSCThemesStore.WebApi
             services.AddTransient<IThemeStoreRefreshService, ThemeStoreRefreshService>();
             services.AddTransient<IGalleryRefreshService, GalleryRefreshService>();
 
-            Mapper.Initialize(cfg => cfg.AddProfile(new MappingProfile()));
-
             var provider = services.BuildServiceProvider();
             JobManager.Initialize(
                 new RefreshGalleryRegistry(
@@ -74,6 +72,7 @@ namespace VSCThemesStore.WebApi
                 )
             );
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
