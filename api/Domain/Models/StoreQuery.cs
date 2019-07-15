@@ -29,14 +29,15 @@ namespace VSCThemesStore.WebApi.Domain.Models
                 if (string.IsNullOrWhiteSpace(SearchTerm))
                 {
                     return Builders<ExtensionMetadata>.Filter
-                            .Eq(extension => extension.Type, ExtensionType.Default);
+                        .Eq(extension => extension.Type, ExtensionType.Default);
                 }
 
-                return Builders<ExtensionMetadata>.Filter.And(
-                    Builders<ExtensionMetadata>.Filter.Eq(
-                        extension => extension.Type, ExtensionType.Default),
-                    Builders<ExtensionMetadata>.Filter.Text(SearchTerm)
-                );
+                return Builders<ExtensionMetadata>.Filter
+                    .And(
+                        Builders<ExtensionMetadata>.Filter.Eq(
+                            extension => extension.Type, ExtensionType.Default),
+                        Builders<ExtensionMetadata>.Filter.Text(SearchTerm)
+                    );
             }
         }
 
@@ -66,20 +67,16 @@ namespace VSCThemesStore.WebApi.Domain.Models
 
         public StoreQuery()
         {
+            var sort = Builders<ExtensionMetadata>.Sort;
+
             _sortings = new Dictionary<string, SortDefinition<ExtensionMetadata>>
             {
-                [SORT_BY_DOWNLOADS] = Builders<ExtensionMetadata>
-                    .Sort.Descending(x => x.Statistics.Downloads),
-                [SORT_BY_UPDATED_DATE] = Builders<ExtensionMetadata>
-                    .Sort.Descending(x => x.LastUpdated),
-                [SORT_BY_PUBLISHER] = Builders<ExtensionMetadata>
-                    .Sort.Ascending(x => x.PublisherDisplayName),
-                [SORT_BY_NAME] = Builders<ExtensionMetadata>
-                    .Sort.Ascending(x => x.DisplayName),
-                [SORT_BY_RATING] = Builders<ExtensionMetadata>
-                    .Sort.Descending(x => x.Statistics.WeightedRating),
-                [SORT_BY_TRENDING_WEEKLY] = Builders<ExtensionMetadata>
-                    .Sort.Descending(x => x.Statistics.TrendingWeekly),
+                [SORT_BY_DOWNLOADS] = sort.Descending(x => x.Statistics.Downloads),
+                [SORT_BY_UPDATED_DATE] = sort.Descending(x => x.LastUpdated),
+                [SORT_BY_PUBLISHER] = sort.Ascending(x => x.PublisherDisplayName),
+                [SORT_BY_NAME] = sort.Ascending(x => x.DisplayName),
+                [SORT_BY_RATING] = sort.Descending(x => x.Statistics.WeightedRating),
+                [SORT_BY_TRENDING_WEEKLY] = sort.Descending(x => x.Statistics.TrendingWeekly),
                 [SORT_BY_RELEVANCE] = null
             };
         }
