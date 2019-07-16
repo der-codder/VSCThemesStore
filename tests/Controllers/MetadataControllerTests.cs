@@ -1,32 +1,16 @@
-using System;
 using System.Threading.Tasks;
-using Autofac.Extras.Moq;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using VSCThemesStore.WebApi.Controllers;
 using VSCThemesStore.WebApi.Controllers.Resources;
 using VSCThemesStore.WebApi.Domain.Models;
 using VSCThemesStore.WebApi.Domain.Repositories;
-using VSCThemesStore.WebApi.Mapping;
 using Xunit;
 
 namespace VSCThemesStore.WebApi.Tests.Controllers
 {
-    public class MetadataControllerTests : IDisposable
+    public class MetadataControllerTests : BaseControllerTests
     {
-        private readonly AutoMock _mock;
-
-        public MetadataControllerTests()
-        {
-            _mock = AutoMock.GetLoose();
-        }
-
-        public void Dispose()
-        {
-            _mock.Dispose();
-        }
-
         [Fact]
         public async Task Get_ReturnsProperMetadata()
         {
@@ -90,12 +74,6 @@ namespace VSCThemesStore.WebApi.Tests.Controllers
             var actionResult = Assert.IsType<ActionResult<ExtensionMetadataResource>>(result);
             var objectResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
             Assert.Equal(expectedId, objectResult.Value);
-        }
-
-        private IMapper CreateMapper()
-        {
-            var config = new MapperConfiguration(cfg => cfg.AddProfile(new MappingProfile()));
-            return config.CreateMapper();
         }
     }
 }
