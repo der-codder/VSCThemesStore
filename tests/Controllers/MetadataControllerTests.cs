@@ -44,29 +44,16 @@ namespace VSCThemesStore.WebApi.Tests.Controllers
             Assert.Equal(nonExistentSessionId, objectResult.Value);
         }
 
-        [Fact]
-        public async Task Get_ReturnsNotFoundObjectResultForExtensionWith_NoThemes_Type()
+        [Theory]
+        [InlineData(ExtensionType.NoThemes)]
+        [InlineData(ExtensionType.NeedAttention)]
+        public async Task Get_ReturnsNotFoundObjectResultForExtensionWithNonDefaultType(
+            ExtensionType extensionType)
         {
             const string expectedId = "expectedId_test";
             _mock.Mock<IExtensionsMetadataRepository>()
                 .Setup(x => x.GetExtensionMetadata(expectedId))
-                .ReturnsAsync(new ExtensionMetadata { Id = expectedId, Type = ExtensionType.NoThemes });
-            var mockController = _mock.Create<MetadataController>();
-
-            var result = await mockController.Get(expectedId);
-
-            var actionResult = Assert.IsType<ActionResult<ExtensionMetadataResource>>(result);
-            var objectResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
-            Assert.Equal(expectedId, objectResult.Value);
-        }
-
-        [Fact]
-        public async Task Get_ReturnsNotFoundObjectResultForExtensionWith_NeedAttention_Type()
-        {
-            const string expectedId = "expectedId_test";
-            _mock.Mock<IExtensionsMetadataRepository>()
-                .Setup(x => x.GetExtensionMetadata(expectedId))
-                .ReturnsAsync(new ExtensionMetadata { Id = expectedId, Type = ExtensionType.NeedAttention });
+                .ReturnsAsync(new ExtensionMetadata { Id = expectedId, Type = extensionType });
             var mockController = _mock.Create<MetadataController>();
 
             var result = await mockController.Get(expectedId);

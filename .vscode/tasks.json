@@ -1,32 +1,33 @@
 {
   "version": "2.0.0",
-  "tasks": [{
-    "label": "server start",
-    "command": "docker-compose up",
-    "type": "shell",
-    "presentation": {
-      "reveal": "always",
-      "panel": "new"
+  "tasks": [
+    {
+      "label": "server start",
+      "command": "docker-compose up",
+      "type": "shell",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
     },
-    "problemMatcher": []
-  }, {
-    "label": "server stop",
-    "command": "docker-compose down",
-    "type": "shell",
-    "presentation": {
-      "reveal": "always",
-      "panel": "new"
+    {
+      "label": "server stop",
+      "command": "docker-compose down",
+      "type": "shell",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
     },
-    "problemMatcher": []
-  }, {
-    "label": "Run server tests",
-    "type": "shell",
-    "command": "dotnet",
-    "args": [
-      "test",
-      "${workspaceFolder}/tests/VSCThemesStore.WebApi.Tests.csproj"
-    ],
-    "group": "test",
-    "problemMatcher": "$msCompile"
-  }]
+    {
+      "label": "Run tests",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["test", "${workspaceFolder}/tests/VSCThemesStore.WebApi.Tests.csproj"],
+      "group": "test",
+      "problemMatcher": "$msCompile"
+    }
+  ]
 }
